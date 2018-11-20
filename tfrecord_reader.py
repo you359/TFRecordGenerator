@@ -24,9 +24,9 @@ def _parse(record):
     image = tf.reshape(image, [height, width, channel])
     image = tf.image.resize_images(image, (299, 299))
     label = tf.cast(parsed_record['data/class/label'], tf.int32)
-    # lebel_name = tf.cast(parsed_record['data/class/name'], tf.string)
+    lebel_name = tf.cast(parsed_record['data/class/name'], tf.string)
 
-    return image, label
+    return image, label, lebel_name
 
 # train_input_fn = data_input_fn(glob.glob('H:/train_*.tfrecord'), shuffle=True)
 # validation_input_fn = data_input_fn(glob.glob('H:/val_*.tfrecord'))
@@ -46,11 +46,13 @@ with tf.Graph().as_default():
 
         iterator = dataset.make_one_shot_iterator()
         # iterator = dataset.make_initializable_iterator()
-        features, labels = iterator.get_next()
+        features, labels, name = iterator.get_next()
 
         # sess.run(iterator)
         for i in range(10):
-            data = sess.run(features)
-            plt.imshow(data[0])
-            plt.show()
-            print(len(sess.run(features)))
+            d_l = sess.run(name)
+            print(d_l[0])
+            # print(d_n[0])
+            # plt.imshow(d_f[0])
+            # plt.show()
+            # print(len(sess.run(features)))

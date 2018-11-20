@@ -128,7 +128,9 @@ class TFRecordGenerator:
 
         filenames, class_names = self.filenames_parser(self.data_dir)
         # Refer each of the class name to a specific integer number for predictions later
-        class_names_to_ids = dict(zip(class_names, range(len(class_names))))
+        class_indices = list(set(class_names))
+        class_names_to_ids = dict(zip(class_indices, range(len(class_indices))))
+
 
         # Find the number of validation examples we need
         num_splits = [[] for k in range(len(self.split_names))]
@@ -137,8 +139,12 @@ class TFRecordGenerator:
             num_splits[i] = int(self.split_ratio[i] * len(filenames))
 
         # Divide the training datasets into train and test:
+
+        combined = list(zip(filenames, class_names))
         random.seed(0)
-        random.shuffle(filenames)
+        random.shuffle(combined)
+
+        filenames[:], class_names[:] = zip(*combined)
 
         split_filenames = [[] for k in range(len(self.split_names))]
         prev_idx = 0
@@ -167,11 +173,11 @@ class TFRecordGenerator:
                             for i in pbar:
                                 data = data_processing(sess, filenames[i])
 
-                                class_name = os.path.basename(os.path.dirname(filenames[i]))
-                                class_id = class_names_to_ids[class_name]
+                                # class_name = os.path.basename(os.path.dirname(filenames[i]))
+                                class_id = class_names_to_ids[class_names[i]]
 
                                 example = data_to_tfexample(
-                                    data, class_name, class_id
+                                    data, class_names[i], class_id
                                 )
 
                                 tfrecord_writer.write(example.SerializeToString())

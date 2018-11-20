@@ -10,18 +10,18 @@ import matplotlib.image as mpimg
 def filenames_parser(data_dir):
     flower_root = os.path.join(data_dir, 'flower_photos')
     directories = []
-    class_names = []
     for filename in os.listdir(flower_root):
         path = os.path.join(flower_root, filename)
         if os.path.isdir(path):
             directories.append(path)
-            class_names.append(filename)
 
     filenames = []
+    class_names = []
     for directory in directories:
         for filename in os.listdir(directory):
             path = os.path.join(directory, filename)
             filenames.append(path)
+            class_names.append(os.path.basename(os.path.dirname(path)))
 
     return filenames, class_names
 
